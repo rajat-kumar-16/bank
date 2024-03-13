@@ -3,6 +3,7 @@ package com.example.Bank.controller;
 import com.example.Bank.Service.AccountService;
 import com.example.Bank.dto.CheckPin;
 import com.example.Bank.dto.AmountRequest;
+import com.example.Bank.dto.FundTransferRequest;
 import com.example.Bank.dto.UpdatePin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class AccountController {
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }}
+    }
     @PostMapping("/deposit")
     public ResponseEntity<?> cashDeposit(@RequestBody AmountRequest amountRequest) {
 
@@ -41,5 +42,26 @@ public class AccountController {
         }
 
         return accountService.cashDeposit(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<?> cashWithdrawal(@RequestBody AmountRequest amountRequest) {
+        if (amountRequest.getAmount() <= 0) {
+            Map<String, String> err = new HashMap<>();
+            err.put("Error", "Invalid amount");
+            return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+        }
+        return accountService.cashWithdrawal(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+    }
+
+    @PostMapping("/fund-transfer")
+    public ResponseEntity<?> fundTransfer(@RequestBody FundTransferRequest fundTransferRequest) {
+        if (fundTransferRequest.getAmount() <= 0) {
+            Map<String, String> err = new HashMap<>();
+            err.put("Error", "Invalid amount");
+            return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+        }
+        return accountService.fundTransfer(fundTransferRequest.getSourceAccountNumber(), fundTransferRequest.getTargetAccountNumber(),
+                fundTransferRequest.getPin(), fundTransferRequest.getAmount());
     }
 }
