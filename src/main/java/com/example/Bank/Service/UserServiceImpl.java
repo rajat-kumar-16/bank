@@ -58,4 +58,14 @@ public class UserServiceImpl implements UserService {
         User user=accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser();
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+    @Override
+    public User userDetails(String email) {
+        User user = userRepository.findByEmail(email);
+        if(user==null){
+            System.out.println("account with this email is not there"+ email);
+            return null;
+        }
+        return user;
+    }
 }
