@@ -11,4 +11,6 @@ public interface AccountService {
         public void createPIN(String accountNumber, String password, String pin) ;
         public void updatePIN(String accountNumber, String oldPIN, String password, String newPIN);
         public ResponseEntity<?> cashDeposit(String accountNumber, String pin,double amount);
+        ResponseEntity<?> cashWithdrawal(String accountNumber, String pin, double amount);
+        ResponseEntity<?> fundTransfer(String sourceAccountNumber, String targetAccountNumber, String pin, double amount);
 }

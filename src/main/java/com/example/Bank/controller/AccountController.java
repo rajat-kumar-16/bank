@@ -50,7 +50,6 @@ public class AccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
-
     @PostMapping("/deposit")
     public ResponseEntity<?> cashDeposit(@RequestBody AmountRequest amountRequest) {
 
@@ -61,5 +60,26 @@ public class AccountController {
         }
 
         return accountService.cashDeposit(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<?> cashWithdrawal(@RequestBody AmountRequest amountRequest) {
+        if (amountRequest.getAmount() <= 0) {
+            Map<String, String> err = new HashMap<>();
+            err.put("Error", "Invalid amount");
+            return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+        }
+        return accountService.cashWithdrawal(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+    }
+
+    @PostMapping("/fund-transfer")
+    public ResponseEntity<?> fundTransfer(@RequestBody FundTransferRequest fundTransferRequest) {
+        if (fundTransferRequest.getAmount() <= 0) {
+            Map<String, String> err = new HashMap<>();
+            err.put("Error", "Invalid amount");
+            return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+        }
+        return accountService.fundTransfer(fundTransferRequest.getSourceAccountNumber(), fundTransferRequest.getTargetAccountNumber(),
+                fundTransferRequest.getPin(), fundTransferRequest.getAmount());
     }
 }

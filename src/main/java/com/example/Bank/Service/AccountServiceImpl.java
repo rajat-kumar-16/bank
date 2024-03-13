@@ -126,4 +126,64 @@ public class AccountServiceImpl implements AccountService {
         transactionRepository.save(transaction);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Deposited");
     }
+
+    @Override
+    public ResponseEntity<?> cashWithdrawal(String accountNumber, String pin, double amount) {
+        Account account =accountRepository.findByAccountNumber(accountNumber);
+        if(account==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No account found.");
+        }
+        if(!account.getPin().equals(pin)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong Pin");
+        }
+        double currentBalance = account.getBalance();
+        if (currentBalance < amount) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient Balance");
+        }
+        double newBalance = currentBalance - amount;
+        account.setBalance(newBalance);
+        accountRepository.save(account);
+
+        Transaction transaction =  new Transaction();
+        transaction.setAmount(amount);
+        transaction.setSourceAccount(account);
+        transaction.setTransactionType(TransactionType.CASH_WITHDRAWAL);
+        transaction.setTransaction_date(new Date());
+        transactionRepository.save(transaction);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Successfully withdrawn");
+    }
+
+    @Override
+    public ResponseEntity<?> fundTransfer(String sourceAccountNumber, String targetAccountNumber, String pin, double amount) {
+        Account sourceAccount =accountRepository.findByAccountNumber(sourceAccountNumber);
+        if(sourceAccount == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Source account not found.");
+        }
+        Account targetAccount = accountRepository.findByAccountNumber(targetAccountNumber);
+        if(targetAccount == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("target account not found.");
+        }
+        if(!sourceAccount.getPin().equals(pin)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong Pin");
+        }
+        double sourceBalance = sourceAccount.getBalance();
+        if (sourceBalance < amount) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient Balance");
+        }
+        double newSourceBalance = sourceBalance - amount;
+        sourceAccount.setBalance(newSourceBalance);
+        accountRepository.save(sourceAccount);
+
+        double targetBalance = targetAccount.getBalance();
+        double newTargetBalance = targetBalance + amount;
+        accountRepository.save(targetAccount);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransaction_date(new Date());
+        transaction.setSourceAccount(sourceAccount);
+        transaction.setTargetAccount(targetAccount);
+        transaction.setAmount(amount);
+        transaction.setTransactionType(TransactionType.CASH_TRANSFER);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Successfully transferred");
+    }
 }
