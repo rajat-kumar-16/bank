@@ -1,13 +1,13 @@
 package com.example.Bank.dto;
 
-public class CheckPin {
+public class AccountNumberDTO {
     private String accountNumber;
 
-    public String getAccount_no() {
+    public String getAccountNumber() {
         return accountNumber;
     }
 
-    public void setAccount_no(String accountNumber) {
+    public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
     }
 }

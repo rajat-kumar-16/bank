@@ -1,6 +1,7 @@
 package com.example.Bank.controller;
 
 import com.example.Bank.Service.AccountService;
+import com.example.Bank.Service.TransactionService;
 import com.example.Bank.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,11 @@ import java.util.*;
 public class AccountController {
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private TransactionService transactionService;
     @PostMapping("/pin/check")
-    public ResponseEntity<?> checkAccountPIN(@RequestBody CheckPin checkPin) {
-        boolean isPINValid = accountService.isPinCreated(checkPin.getAccount_no());
+    public ResponseEntity<?> checkAccountPIN(@RequestBody AccountNumberDTO accountNumberDTO) {
+        boolean isPINValid = accountService.isPinCreated(accountNumberDTO.getAccountNumber());
 
         Map<String, Object> result = new HashMap<>();
         result.put("hasPIN", isPINValid);
@@ -81,5 +84,13 @@ public class AccountController {
         }
         return accountService.fundTransfer(fundTransferRequest.getSourceAccountNumber(), fundTransferRequest.getTargetAccountNumber(),
                 fundTransferRequest.getPin(), fundTransferRequest.getAmount());
+    }
+    @GetMapping("/transactions")
+    public ResponseEntity<List<TransactionDTO>> getAllTransactionsByAccountNumber(@RequestBody AccountNumberDTO accountNumberDTO) {
+        System.out.println(accountNumberDTO);
+        System.out.println(accountNumberDTO.getAccountNumber());
+        List<TransactionDTO> transactions = transactionService
+                .getAllTransactionsByAccountNumber(accountNumberDTO.getAccountNumber());
+        return ResponseEntity.ok(transactions);
     }
 }
