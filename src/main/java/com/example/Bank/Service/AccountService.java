@@ -9,4 +9,6 @@ public interface AccountService {
         public Account AccountDetails(String accountNumber);
         public boolean isPinCreated(String accountNumber);
         public ResponseEntity<?> cashDeposit(String accountNumber, String pin,double amount);
+        ResponseEntity<?> cashWithdrawal(String accountNumber, String pin, double amount);
+        ResponseEntity<?> fundTransfer(String sourceAccountNumber, String targetAccountNumber, String pin, double amount);
 }
