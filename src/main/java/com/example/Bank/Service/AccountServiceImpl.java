@@ -2,9 +2,14 @@ package com.example.Bank.Service;
 
 import com.example.Bank.Repository.AccountRepository;
 import com.example.Bank.exception.NotFoundException;
+import com.example.Bank.Repository.TransactionRepository;
 import com.example.Bank.model.Account;
+import com.example.Bank.model.Transaction;
+import com.example.Bank.model.TransactionType;
 import com.example.Bank.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,7 +18,8 @@ import java.util.*;
 public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository accountRepository;
-
+    @Autowired
+    private TransactionRepository transactionRepository;
     @Override
     public Account createAccount(User user) {
         String accountNumber = generateUniqueAccountNumber();
@@ -57,5 +63,27 @@ public class AccountServiceImpl implements AccountService {
         if(account.getPin()== null)
             return false;
         return true;
+    }
+
+    @Override
+    public ResponseEntity<?> cashDeposit(String accountNumber, String pin, double amount) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        if(account==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No account found.");
+        }
+        if(!account.getPin().equals(pin)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong Pin");
+        }
+        double currentBalance = account.getBalance();
+        double newBalance = currentBalance + amount;
+        account.setBalance(newBalance);
+        accountRepository.save(account);
+        Transaction transaction =  new Transaction();
+        transaction.setAmount(amount);
+        transaction.setSourceAccount(account);
+        transaction.setTransactionType(TransactionType.CASH_DEPOSIT);
+        transaction.setTransaction_date(new Date());
+        transactionRepository.save(transaction);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Deposited");
     }
 }
