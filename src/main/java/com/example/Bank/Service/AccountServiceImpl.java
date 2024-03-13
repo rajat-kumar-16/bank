@@ -83,6 +83,29 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void updatePIN(String accountNumber, String oldPIN, String password, String newPIN) {
+        System.out.println(accountNumber+"  "+oldPIN+" "+newPIN+"  "+password);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new NotFoundException("Account not found");
+        }
+
+        if(!account.getUser().getPassword().equals(password)){
+            throw new UnauthorizedException("Invalid password");
+
+        }
+
+        if(!account.getPin().equals(oldPIN)){
+            throw new UnauthorizedException("Invalid pin");
+
+        }
+
+        account.setPin(newPIN);
+        accountRepository.save(account);
+    }
+
+    @Override
     public ResponseEntity<?> cashDeposit(String accountNumber, String pin, double amount) {
         Account account = accountRepository.findByAccountNumber(accountNumber);
         if(account==null){
