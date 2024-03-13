@@ -8,5 +8,6 @@ public interface AccountService {
         public Account createAccount(User user);
         public Account AccountDetails(String accountNumber);
         public boolean isPinCreated(String accountNumber);
+        public void createPIN(String accountNumber, String password, String pin) ;
         public ResponseEntity<?> cashDeposit(String accountNumber, String pin,double amount);
 }
