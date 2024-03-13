@@ -1,10 +1,7 @@
 package com.example.Bank.controller;
 
 import com.example.Bank.Service.AccountService;
-import com.example.Bank.dto.CheckPin;
-import com.example.Bank.dto.AmountRequest;
-import com.example.Bank.dto.FundTransferRequest;
-import com.example.Bank.dto.UpdatePin;
+import com.example.Bank.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +28,27 @@ public class AccountController {
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @PostMapping("/pin/create")
+    public ResponseEntity<?> createPIN(@RequestBody PinRequest pinRequest) {
+        accountService.createPIN(pinRequest.getAccountNumber(), pinRequest.getPassword(), pinRequest.getPin());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", "PIN created successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    }
+    @PostMapping("/pin/update")
+    public ResponseEntity<?> updatePIN(@RequestBody PinUpdateRequest pinUpdateRequest) {
+        accountService.updatePIN(pinUpdateRequest.getAccountNumber(), pinUpdateRequest.getOldPin(),
+                pinUpdateRequest.getPassword(), pinUpdateRequest.getNewPin());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", "PIN updated successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
     @PostMapping("/deposit")
     public ResponseEntity<?> cashDeposit(@RequestBody AmountRequest amountRequest) {

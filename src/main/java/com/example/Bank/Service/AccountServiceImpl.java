@@ -3,6 +3,7 @@ package com.example.Bank.Service;
 import com.example.Bank.Repository.AccountRepository;
 import com.example.Bank.exception.NotFoundException;
 import com.example.Bank.Repository.TransactionRepository;
+import com.example.Bank.exception.UnauthorizedException;
 import com.example.Bank.model.Account;
 import com.example.Bank.model.Transaction;
 import com.example.Bank.model.TransactionType;
@@ -63,6 +64,45 @@ public class AccountServiceImpl implements AccountService {
         if(account.getPin()== null)
             return false;
         return true;
+    }
+
+    @Override
+    public void createPIN(String accountNumber, String password, String pin) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new NotFoundException("Account not found");
+        }
+
+        if(!account.getUser().getPassword().equals(password)){
+            throw new UnauthorizedException("Invalid password");
+
+        }
+
+        account.setPin(pin);
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void updatePIN(String accountNumber, String oldPIN, String password, String newPIN) {
+        System.out.println(accountNumber+"  "+oldPIN+" "+newPIN+"  "+password);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new NotFoundException("Account not found");
+        }
+
+        if(!account.getUser().getPassword().equals(password)){
+            throw new UnauthorizedException("Invalid password");
+
+        }
+
+        if(!account.getPin().equals(oldPIN)){
+            throw new UnauthorizedException("Invalid pin");
+
+        }
+
+        account.setPin(newPIN);
+        accountRepository.save(account);
     }
 
     @Override
