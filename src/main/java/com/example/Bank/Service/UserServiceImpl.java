@@ -4,6 +4,7 @@ import com.example.Bank.Repository.AccountRepository;
 import com.example.Bank.Repository.UserRepository;
 import com.example.Bank.Service.AccountService;
 import com.example.Bank.dto.LoginRequest;
+import com.example.Bank.exception.UserValidation;
 import com.example.Bank.model.Account;
 import com.example.Bank.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,33 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @Override
+    public User updateUser(User user) {
+        System.out.println(user.getEmail());
+        User existingUser = userRepository.findByEmail("xyz@gmail.com");
+
+        if (existingUser == null) {
+            System.out.println("User not found with email: xyz@gmail.com");
+        } else {
+            System.out.println("User found: " + existingUser.getEmail());
+        }
+        if(user.getName() != null){
+            if(user.getName().isEmpty())
+                throw new UserValidation("Name can't be empty");
+            else
+                existingUser.setName(user.getName());
+        }
+        if(user.getPhone_number() != null){
+            if(user.getPhone_number().isEmpty())
+                throw new UserValidation("Phone number can't be empty");
+            else
+                existingUser.setPhone_number(user.getPhone_number());
+        }
+        if(user.getAddress() != null){
+            existingUser.setAddress(user.getAddress());
+        }
+        return userRepository.save(existingUser);
+    }
     @Override
     public User userDetails(String email) {
         User user = userRepository.findByEmail(email);

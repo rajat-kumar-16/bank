@@ -7,10 +7,7 @@ import com.example.Bank.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,27 +20,30 @@ public class UserController {
         this.userService = userService;
     }
         @PostMapping("/register")
-    public HttpStatus registerUser(@RequestBody User user) {
-        User registeredUser = userService.registerUser(user);
+        public HttpStatus registerUser(@RequestBody User user) {
+            User registeredUser = userService.registerUser(user);
 
-        UserResponse userResponse = new UserResponse();
-        userResponse.setName(registeredUser.getName());
-        userResponse.setEmail(registeredUser.getEmail());
-        userResponse.setAccountNumber(registeredUser.getAccount().getAccountNumber());
-        userResponse.setIFSC_code(registeredUser.getAccount().getIFSC_code());
-        userResponse.setBranch(registeredUser.getAccount().getBranch());
-        userResponse.setAccount_type(registeredUser.getAccount().getAccount_type());
+            UserResponse userResponse = new UserResponse();
+            userResponse.setName(registeredUser.getName());
+            userResponse.setEmail(registeredUser.getEmail());
+            userResponse.setAccountNumber(registeredUser.getAccount().getAccountNumber());
+            userResponse.setIFSC_code(registeredUser.getAccount().getIFSC_code());
+            userResponse.setBranch(registeredUser.getAccount().getBranch());
+            userResponse.setAccount_type(registeredUser.getAccount().getAccount_type());
 
-
-        return HttpStatus.ACCEPTED;
+            return HttpStatus.ACCEPTED;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest)
     {
-
         return userService.authenticate(loginRequest);
+    }
+    @PutMapping ("/update")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User updateUser = userService.updateUser(user);
 
+        return ResponseEntity.ok(updateUser);
     }
 
 }
