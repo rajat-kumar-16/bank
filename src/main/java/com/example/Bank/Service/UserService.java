@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 public interface UserService {
     public User registerUser(User user);
     public ResponseEntity<?> authenticate(LoginRequest loginRequest);
+    User updateUser(User user);
 }
 
 
