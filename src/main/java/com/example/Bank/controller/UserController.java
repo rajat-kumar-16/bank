@@ -21,6 +21,22 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User registeredUser = userService.registerUser(user);
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setName(registeredUser.getName());
+        userResponse.setEmail(registeredUser.getEmail());
+        userResponse.setAccountNumber(registeredUser.getAccount().getAccountNumber());
+        userResponse.setIFSC_code(registeredUser.getAccount().getIFSC_code());
+        userResponse.setBranch(registeredUser.getAccount().getBranch());
+        userResponse.setAccount_type(registeredUser.getAccount().getAccount_type());
+
+
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
         try {
             userService.registerUser(user);

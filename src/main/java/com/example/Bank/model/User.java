@@ -23,8 +23,7 @@ public class User {
     private String email;
     private String address;
     private String phone_number;
-    private int otpRetryCount;
-    private LocalDateTime lastOtpRequestTime;
+
 
     // Establishing a one-to-one relationship with the account
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -88,21 +87,4 @@ public class User {
         this.account = account;
         account.setUser(this);
     }
-
-    public int getOtpRetryCount() {
-        return otpRetryCount;
-    }
-
-    public void setOtpRetryCount(int otpRetryCount) {
-        this.otpRetryCount = otpRetryCount;
-    }
-
-    public LocalDateTime getLastOtpRequestTime() {
-        return lastOtpRequestTime;
-    }
-
-    public void setLastOtpRequestTime(LocalDateTime lastOtpRequestTime) {
-        this.lastOtpRequestTime = lastOtpRequestTime;
-    }
-
 }
