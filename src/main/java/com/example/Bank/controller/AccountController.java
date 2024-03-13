@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class AccountController {
     @Autowired
     private AccountService accountService;
-    @PostMapping("/pin/update")
+//    @PostMapping("/pin/update")
 //    public HttpStatus UpdatePin(@RequestBody UpdatePin updatePin){
 //
 //    }
