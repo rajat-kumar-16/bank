@@ -1,11 +1,17 @@
 package com.example.Bank.controller;
 
+import com.example.Bank.dto.LoginRequest;
 import com.example.Bank.dto.UserResponse;
 import com.example.Bank.model.User;
 import com.example.Bank.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserController {
     @Autowired
+    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private final UserDetailsService userDetailsService;
+    @Autowired
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserDetailsService userDetailsService, AuthenticationManager authenticationManager) {
         this.userService = userService;
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
+
     }
 
     @PostMapping("/register")
@@ -36,6 +49,28 @@ public class UserController {
 
 
         return HttpStatus.ACCEPTED;
+    }
+
+    @PostMapping("/login")
+    public HttpStatus loginUser(@RequestBody LoginRequest loginRequest)
+    {
+
+        try {
+            // Authenticate the user with the account number and password
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getAccountNumber(), loginRequest.getPassword())
+            );
+        } catch (BadCredentialsException e) {
+            // Invalid credentials, return 401 Unauthorized
+            return HttpStatus.UNAUTHORIZED;
+        }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getAccountNumber());
+        System.out.println(userDetails);
+
+        return HttpStatus.OK;
+
+
     }
 
 }
