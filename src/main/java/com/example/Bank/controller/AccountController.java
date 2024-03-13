@@ -62,7 +62,11 @@ public class AccountController {
             return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
         }
 
-        return accountService.cashDeposit(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+        accountService.cashDeposit(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", "Cash deposited successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/withdraw")
@@ -72,7 +76,11 @@ public class AccountController {
             err.put("Error", "Invalid amount");
             return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
         }
-        return accountService.cashWithdrawal(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+        accountService.cashWithdrawal(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", "Cash withdrawn successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/fund-transfer")
@@ -82,13 +90,15 @@ public class AccountController {
             err.put("Error", "Invalid amount");
             return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
         }
-        return accountService.fundTransfer(fundTransferRequest.getSourceAccountNumber(), fundTransferRequest.getTargetAccountNumber(),
+        accountService.fundTransfer(fundTransferRequest.getSourceAccountNumber(), fundTransferRequest.getTargetAccountNumber(),
                 fundTransferRequest.getPin(), fundTransferRequest.getAmount());
+        Map<String, String> response = new HashMap<>();
+        response.put("msg", "Fund transferred successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("/transactions")
     public ResponseEntity<List<TransactionDTO>> getAllTransactionsByAccountNumber(@RequestBody AccountNumberDTO accountNumberDTO) {
-        System.out.println(accountNumberDTO);
-        System.out.println(accountNumberDTO.getAccountNumber());
         List<TransactionDTO> transactions = transactionService
                 .getAllTransactionsByAccountNumber(accountNumberDTO.getAccountNumber());
         return ResponseEntity.ok(transactions);
