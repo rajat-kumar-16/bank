@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/home")
+@RequestMapping("/api/home/account")
 public class HomeController {
     @Autowired
     private AccountService accountService;
-    @GetMapping("/account/{account_no}")
+    @GetMapping("/{account_no}")
     public Account AccountDetails(@PathVariable String account_no){
         return accountService.AccountDetails(account_no);
     }
+
+
 }
