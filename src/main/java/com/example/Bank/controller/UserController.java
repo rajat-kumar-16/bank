@@ -1,5 +1,6 @@
 package com.example.Bank.controller;
 
+import com.example.Bank.dto.UserResponse;
 import com.example.Bank.model.User;
 import com.example.Bank.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    @Autowired
     private final UserService userService;
 
     @Autowired
@@ -21,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public HttpStatus registerUser(@RequestBody User user) {
         User registeredUser = userService.registerUser(user);
 
         UserResponse userResponse = new UserResponse();
@@ -33,17 +35,7 @@ public class UserController {
         userResponse.setAccount_type(registeredUser.getAccount().getAccount_type());
 
 
-        return ResponseEntity.ok(userResponse);
+        return HttpStatus.ACCEPTED;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        try {
-            userService.registerUser(user);
-            return ResponseEntity.ok("User registered successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to register user: " + e.getMessage());
-        }
-    }
 }
