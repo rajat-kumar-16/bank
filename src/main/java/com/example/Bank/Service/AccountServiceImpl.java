@@ -42,4 +42,9 @@ public class AccountServiceImpl implements AccountService {
         }
         return account;
     }
+
+    @Override
+    public Account isPinCreated(String accountNumber) {
+        return null;
+    }
 }

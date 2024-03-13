@@ -5,4 +5,5 @@ import com.example.Bank.model.User;
 public interface AccountService {
         public Account createAccount(User user);
         public Account AccountDetails(String accountNumber);
-    }
+        public Account isPinCreated(String accountNumber);
+}
