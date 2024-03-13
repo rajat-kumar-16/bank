@@ -7,6 +7,6 @@ import org.springframework.http.ResponseEntity;
 public interface AccountService {
         public Account createAccount(User user);
         public Account AccountDetails(String accountNumber);
-        public Account isPinCreated(String accountNumber);
+        public boolean isPinCreated(String accountNumber);
         public ResponseEntity<?> cashDeposit(String accountNumber, String pin,double amount);
 }

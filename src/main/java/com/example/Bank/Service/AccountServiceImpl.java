@@ -1,6 +1,7 @@
 package com.example.Bank.Service;
 
 import com.example.Bank.Repository.AccountRepository;
+import com.example.Bank.exception.NotFoundException;
 import com.example.Bank.Repository.TransactionRepository;
 import com.example.Bank.model.Account;
 import com.example.Bank.model.Transaction;
@@ -50,8 +51,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account isPinCreated(String accountNumber) {
-        return null;
+    public boolean isPinCreated(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        System.out.println(account);
+        if(account==null)
+        {
+            System.out.println("Account Not Found");
+            return false;
+        }
+
+        if(account.getPin()== null)
+            return false;
+        return true;
     }
 
     @Override

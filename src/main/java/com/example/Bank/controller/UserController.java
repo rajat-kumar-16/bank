@@ -43,6 +43,7 @@ public class UserController {
     {
 
         return userService.authenticate(loginRequest);
+
     }
 
 }
