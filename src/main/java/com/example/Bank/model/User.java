@@ -23,8 +23,6 @@ public class User {
     private String email;
     private String address;
     private String phone_number;
-    private int otpRetryCount;
-    private LocalDateTime lastOtpRequestTime;
 
     // Establishing a one-to-one relationship with the account
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
