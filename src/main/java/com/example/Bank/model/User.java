@@ -23,7 +23,6 @@ public class User {
     private String email;
     private String address;
     private String phone_number;
-
     // Establishing a one-to-one relationship with the account
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -86,5 +85,4 @@ public class User {
         this.account = account;
         account.setUser(this);
     }
-
 }
