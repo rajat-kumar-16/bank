@@ -1,5 +1,6 @@
 package com.example.Bank.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,6 +23,7 @@ public class Account {
     private String Pin;
     private String accountstatus;
     @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
 
