@@ -87,20 +87,4 @@ public class User {
         account.setUser(this);
     }
 
-    public int getOtpRetryCount() {
-        return otpRetryCount;
-    }
-
-    public void setOtpRetryCount(int otpRetryCount) {
-        this.otpRetryCount = otpRetryCount;
-    }
-
-    public LocalDateTime getLastOtpRequestTime() {
-        return lastOtpRequestTime;
-    }
-
-    public void setLastOtpRequestTime(LocalDateTime lastOtpRequestTime) {
-        this.lastOtpRequestTime = lastOtpRequestTime;
-    }
-
 }
