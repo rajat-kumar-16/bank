@@ -88,7 +88,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void updatePIN(String accountNumber, String oldPIN, String password, String newPIN) {
-        System.out.println(accountNumber+"  "+oldPIN+" "+newPIN+"  "+password);
+//        System.out.println(accountNumber+"  "+oldPIN+" "+newPIN+"  "+password);
 
         Account account = accountRepository.findByAccountNumber(accountNumber);
         if (account == null) {
