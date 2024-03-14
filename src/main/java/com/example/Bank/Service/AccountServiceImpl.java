@@ -12,6 +12,7 @@ import com.example.Bank.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,6 +23,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountRepository accountRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public Account createAccount(User user) {
         String accountNumber = generateUniqueAccountNumber();
@@ -74,35 +77,36 @@ public class AccountServiceImpl implements AccountService {
             throw new NotFoundException("Account not found");
         }
 
-        if(!account.getUser().getPassword().equals(password)){
+        if(!passwordEncoder.matches(password, account.getUser().getPassword())){
             throw new UnauthorizedException("Invalid password");
 
         }
-
-        account.setPin(pin);
+        String encodedPin = passwordEncoder.encode(pin);
+        account.setPin(encodedPin);
         accountRepository.save(account);
     }
 
     @Override
     public void updatePIN(String accountNumber, String oldPIN, String password, String newPIN) {
-        System.out.println(accountNumber+"  "+oldPIN+" "+newPIN+"  "+password);
+//        System.out.println(accountNumber+"  "+oldPIN+" "+newPIN+"  "+password);
 
         Account account = accountRepository.findByAccountNumber(accountNumber);
         if (account == null) {
             throw new NotFoundException("Account not found");
         }
 
-        if(!account.getUser().getPassword().equals(password)){
+        if(!passwordEncoder.matches(password, accountRepository.findByAccountNumber(accountNumber).getUser().getPassword())){
             throw new UnauthorizedException("Invalid password");
 
         }
 
-        if(!account.getPin().equals(oldPIN)){
+        if(!passwordEncoder.matches(oldPIN, account.getPin())){
             throw new UnauthorizedException("Invalid pin");
 
         }
 
-        account.setPin(newPIN);
+        String encodedPin = passwordEncoder.encode(newPIN);
+        account.setPin(encodedPin);
         accountRepository.save(account);
     }
 
@@ -112,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
         if(account==null){
             throw new NotFoundException("Account not found");
         }
-        if(!account.getPin().equals(pin)){
+        if(!passwordEncoder.matches(pin, account.getPin())){
             throw new UnauthorizedException("Invalid PIN");
         }
         double currentBalance = account.getBalance();
@@ -133,7 +137,7 @@ public class AccountServiceImpl implements AccountService {
         if(account==null){
             throw new NotFoundException("Account not found");
         }
-        if(!account.getPin().equals(pin)){
+        if(!passwordEncoder.matches(pin, account.getPin())){
             throw new UnauthorizedException("Invalid PIN");
         }
         double currentBalance = account.getBalance();
@@ -162,7 +166,7 @@ public class AccountServiceImpl implements AccountService {
         if(targetAccount == null){
             throw new NotFoundException("Target account not found");
         }
-        if(!sourceAccount.getPin().equals(pin)){
+        if(!passwordEncoder.matches(pin, sourceAccount.getPin())){
             throw new UnauthorizedException("Invalid PIN");
         }
         double sourceBalance = sourceAccount.getBalance();
