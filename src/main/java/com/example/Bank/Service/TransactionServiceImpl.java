@@ -14,7 +14,7 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRepository transactionRepository;
     @Override
     public List<TransactionDTO> getAllTransactionsByAccountNumber(String accountNumber) {
-
+        if(accountNumber==null) return new ArrayList<>();
         List<Transaction> transactions = transactionRepository.findBySourceAccount_AccountNumberOrTargetAccount_AccountNumber(accountNumber, accountNumber);
 
         List<TransactionDTO> transactionDTOs = transactions.stream().map(transaction -> convertToTransactionDTO(transaction)).sorted((t1, t2) -> t2.getTransaction_date().compareTo(t1.getTransaction_date())).collect((Collectors.toList()));

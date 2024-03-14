@@ -52,8 +52,6 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No account found.");
         }
         if(!accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser().getPassword().equals(loginRequest.getPassword())){
-            System.out.println(loginRequest.getAccountNumber());
-            System.out.println(accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser().getPassword());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong credentials");
         }
         User user=accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser();
