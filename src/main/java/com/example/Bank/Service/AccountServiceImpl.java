@@ -1,6 +1,7 @@
 package com.example.Bank.Service;
 
 import com.example.Bank.Repository.AccountRepository;
+import com.example.Bank.exception.InsufficientBalanceException;
 import com.example.Bank.exception.NotFoundException;
 import com.example.Bank.Repository.TransactionRepository;
 import com.example.Bank.exception.UnauthorizedException;
@@ -106,13 +107,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ResponseEntity<?> cashDeposit(String accountNumber, String pin, double amount) {
+    public void cashDeposit(String accountNumber, String pin, double amount) {
         Account account = accountRepository.findByAccountNumber(accountNumber);
         if(account==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No account found.");
+            throw new NotFoundException("Account not found");
         }
         if(!account.getPin().equals(pin)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong Pin");
+            throw new UnauthorizedException("Invalid PIN");
         }
         double currentBalance = account.getBalance();
         double newBalance = currentBalance + amount;
@@ -124,21 +125,20 @@ public class AccountServiceImpl implements AccountService {
         transaction.setTransactionType(TransactionType.CASH_DEPOSIT);
         transaction.setTransaction_date(new Date());
         transactionRepository.save(transaction);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Deposited");
     }
 
     @Override
-    public ResponseEntity<?> cashWithdrawal(String accountNumber, String pin, double amount) {
+    public void cashWithdrawal(String accountNumber, String pin, double amount) {
         Account account =accountRepository.findByAccountNumber(accountNumber);
         if(account==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No account found.");
+            throw new NotFoundException("Account not found");
         }
         if(!account.getPin().equals(pin)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong Pin");
+            throw new UnauthorizedException("Invalid PIN");
         }
         double currentBalance = account.getBalance();
         if (currentBalance < amount) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient Balance");
+            throw new InsufficientBalanceException("Insufficient balance");
         }
         double newBalance = currentBalance - amount;
         account.setBalance(newBalance);
@@ -150,25 +150,24 @@ public class AccountServiceImpl implements AccountService {
         transaction.setTransactionType(TransactionType.CASH_WITHDRAWAL);
         transaction.setTransaction_date(new Date());
         transactionRepository.save(transaction);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Successfully withdrawn");
     }
 
     @Override
-    public ResponseEntity<?> fundTransfer(String sourceAccountNumber, String targetAccountNumber, String pin, double amount) {
+    public void fundTransfer(String sourceAccountNumber, String targetAccountNumber, String pin, double amount) {
         Account sourceAccount =accountRepository.findByAccountNumber(sourceAccountNumber);
         if(sourceAccount == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Source account not found.");
+            throw new NotFoundException("Source account not found");
         }
         Account targetAccount = accountRepository.findByAccountNumber(targetAccountNumber);
         if(targetAccount == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("target account not found.");
+            throw new NotFoundException("Target account not found");
         }
         if(!sourceAccount.getPin().equals(pin)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong Pin");
+            throw new UnauthorizedException("Invalid PIN");
         }
         double sourceBalance = sourceAccount.getBalance();
         if (sourceBalance < amount) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient Balance");
+            throw new InsufficientBalanceException("Insufficient balance");
         }
         double newSourceBalance = sourceBalance - amount;
         sourceAccount.setBalance(newSourceBalance);
@@ -176,6 +175,7 @@ public class AccountServiceImpl implements AccountService {
 
         double targetBalance = targetAccount.getBalance();
         double newTargetBalance = targetBalance + amount;
+        targetAccount.setBalance(newTargetBalance);
         accountRepository.save(targetAccount);
 
         Transaction transaction = new Transaction();
@@ -184,6 +184,6 @@ public class AccountServiceImpl implements AccountService {
         transaction.setTargetAccount(targetAccount);
         transaction.setAmount(amount);
         transaction.setTransactionType(TransactionType.CASH_TRANSFER);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Amount Successfully transferred");
+        transactionRepository.save(transaction);
     }
 }
