@@ -10,6 +10,7 @@ import com.example.Bank.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -19,18 +20,18 @@ public class UserServiceImpl implements UserService {
     private final AccountService accountService;
     @Autowired
     private AccountRepository accountRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AccountService accountService) {
+    public UserServiceImpl(UserRepository userRepository, AccountService accountService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountService = accountService;
-//        this.passwordEncoder =  passwordEncoder;
+        this.passwordEncoder =  passwordEncoder;
     }
     @Override
     public User registerUser(User user) {
 
-//        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(user.getPassword());
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
 
         // Save the user details
         User savedUser = userRepository.save(user);
@@ -48,11 +49,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
-        if(accountRepository.findByAccountNumber(loginRequest.getAccountNumber())==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No account found.");
-        }
-        if(!accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser().getPassword().equals(loginRequest.getPassword())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong credentials");
+        if(accountRepository.findByAccountNumber(loginRequest.getAccountNumber())==null || !passwordEncoder.matches(loginRequest.getPassword(),accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser().getPassword())){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid account number or password");
         }
         User user=accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser();
         return new ResponseEntity<>(user, HttpStatus.OK);
