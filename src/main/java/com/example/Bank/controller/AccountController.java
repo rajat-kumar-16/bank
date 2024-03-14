@@ -35,7 +35,6 @@ public class AccountController {
     @PostMapping("/pin/create")
     public ResponseEntity<?> createPIN(@RequestBody PinRequest pinRequest) {
         accountService.createPIN(pinRequest.getAccountNumber(), pinRequest.getPassword(), pinRequest.getPin());
-
         Map<String, String> response = new HashMap<>();
         response.put("msg", "PIN created successfully");
 
