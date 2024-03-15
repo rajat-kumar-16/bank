@@ -21,7 +21,6 @@ public class JWTUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Invalid account number");
         }
-
         // Return a UserDetails object that wraps the User entity
         return new org.springframework.security.core.userdetails.User(
                 user.getAccount().getAccountNumber(),  // Use account number as the username
