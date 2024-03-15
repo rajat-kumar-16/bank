@@ -2,10 +2,9 @@ package com.example.Bank.controller;
 
 import com.example.Bank.Service.AccountService;
 import com.example.Bank.Service.UserService;
-import com.example.Bank.dto.AccountNumberDTO;
-import com.example.Bank.dto.UserEmailDTO;
 import com.example.Bank.model.Account;
 import com.example.Bank.model.User;
+import com.example.Bank.util.LoggedinUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +16,11 @@ public class HomeController {
     @Autowired
     private UserService userService;
     @GetMapping("/account")
-    public Account AccountDetails(@RequestBody AccountNumberDTO accountNumberDTO){
-        return accountService.AccountDetails(accountNumberDTO.getAccountNumber());
+    public Account AccountDetails(){
+        return accountService.AccountDetails(LoggedinUser.getAccountNumber());
     }
     @GetMapping("/user")
-    public User UserDetails(@RequestBody UserEmailDTO userEmailDTO){
-        return userService.userDetails(userEmailDTO.getEmail());
+    public User UserDetails(){
+        return userService.userDetails(LoggedinUser.getAccountNumber());
     }
 }

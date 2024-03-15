@@ -7,6 +7,7 @@ import com.example.Bank.dto.LoginRequest;
 import com.example.Bank.exception.UserValidation;
 import com.example.Bank.model.Account;
 import com.example.Bank.model.User;
+import com.example.Bank.util.LoggedinUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,23 +49,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
-        if(accountRepository.findByAccountNumber(loginRequest.getAccountNumber())==null || !passwordEncoder.matches(loginRequest.getPassword(),accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser().getPassword())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid account number or password");
-        }
-        User user=accountRepository.findByAccountNumber(loginRequest.getAccountNumber()).getUser();
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @Override
     public User updateUser(User user) {
-        System.out.println(user.getEmail());
-        User existingUser = userRepository.findByEmail("xyz@gmail.com");
 
-        if (existingUser == null) {
-            System.out.println("User not found with email: xyz@gmail.com");
-        } else {
-            System.out.println("User found: " + existingUser.getEmail());
+        User existingUser = userRepository.findByAccountAccountNumber(LoggedinUser.getAccountNumber());
+
+        if(user.getEmail() != null){
+            if(user.getEmail().isEmpty())
+                throw new UserValidation("Email can't be empty");
+            else
+                existingUser.setEmail(user.getEmail());
         }
         if(user.getName() != null){
             if(user.getName().isEmpty())
@@ -84,12 +77,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(existingUser);
     }
     @Override
-    public User userDetails(String email) {
-        User user = userRepository.findByEmail(email);
-        if(user==null){
-            System.out.println("account with this email is not there"+ email);
-            return null;
-        }
-        return user;
+    public User userDetails(String accountNumber) {
+        return userRepository.findByAccountAccountNumber(accountNumber);
     }
 }

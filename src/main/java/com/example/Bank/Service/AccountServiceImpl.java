@@ -47,12 +47,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account AccountDetails(String account_no) {
-        Account account = accountRepository.findByAccountNumber(account_no);
-        if(account==null){
-            System.out.println("account with this account no. not there"+account_no);
-            return null;
-        }
-        return account;
+        return accountRepository.findByAccountNumber(account_no);
     }
 
     @Override
@@ -164,6 +159,7 @@ public class AccountServiceImpl implements AccountService {
         }
         Account targetAccount = accountRepository.findByAccountNumber(targetAccountNumber);
         if(targetAccount == null){
+            System.out.println(targetAccountNumber);
             throw new NotFoundException("Target account not found");
         }
         if(!passwordEncoder.matches(pin, sourceAccount.getPin())){
