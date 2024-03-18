@@ -1,9 +1,6 @@
 package com.example.Bank.controller;
 
-import com.example.Bank.exception.InsufficientBalanceException;
-import com.example.Bank.exception.InvalidJwtTokenException;
-import com.example.Bank.exception.NotFoundException;
-import com.example.Bank.exception.UnauthorizedException;
+import com.example.Bank.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,6 +25,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InsufficientBalanceException.class)
     public ResponseEntity<String> handleInsufficientBalanceException(InsufficientBalanceException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EmailAlreadyExist.class)
+    public ResponseEntity<String> handleEmailAlreadyExists(EmailAlreadyExist ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

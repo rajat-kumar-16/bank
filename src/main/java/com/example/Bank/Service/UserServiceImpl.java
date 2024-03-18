@@ -4,6 +4,7 @@ import com.example.Bank.Repository.AccountRepository;
 import com.example.Bank.Repository.UserRepository;
 import com.example.Bank.Service.AccountService;
 import com.example.Bank.dto.LoginRequest;
+import com.example.Bank.exception.EmailAlreadyExist;
 import com.example.Bank.exception.UserValidation;
 import com.example.Bank.model.Account;
 import com.example.Bank.model.User;
@@ -35,28 +36,32 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encodedPassword);
 
         // Save the user details
+        if(userRepository.findByEmail(user.getEmail())!=null){
+            throw new EmailAlreadyExist("Email already exists");
+        }
         User savedUser = userRepository.save(user);
-
         // Create an account for the user
         Account account = accountService.createAccount(savedUser);
 
         savedUser.setAccount(account);
         userRepository.save(savedUser);
 
-        System.out.println(savedUser.getAccount().getAccountNumber());
-        System.out.println(account.getUser().getName());
+//        System.out.println(savedUser.getAccount().getAccountNumber());
+//        System.out.println(account.getUser().getName());
         return savedUser;
     }
 
     @Override
     public User updateUser(User user) {
-
         User existingUser = userRepository.findByAccountAccountNumber(LoggedinUser.getAccountNumber());
 
         if(user.getEmail() != null){
             if(user.getEmail().isEmpty())
                 throw new UserValidation("Email can't be empty");
             else
+                if(userRepository.findByEmail(user.getEmail())!=null && userRepository.findByEmail(user.getEmail())!=existingUser){
+                    throw new EmailAlreadyExist("Email already exists");
+                }
                 existingUser.setEmail(user.getEmail());
         }
         if(user.getName() != null){
