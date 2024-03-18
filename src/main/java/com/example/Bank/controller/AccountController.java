@@ -54,12 +54,12 @@ public class AccountController {
     }
     @PostMapping("/deposit")
     public ResponseEntity<?> cashDeposit(@RequestBody AmountRequest amountRequest) {
-
         if (amountRequest.getAmount() <= 0) {
             Map<String, String> err = new HashMap<>();
             err.put("Error", "Invalid amount");
             return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
         }
+        accountService.cashDeposit(amountRequest.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
 
         accountService.cashDeposit(LoggedinUser.getAccountNumber(), amountRequest.getPin(), amountRequest.getAmount());
         Map<String, String> response = new HashMap<>();
